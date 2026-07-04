@@ -43,6 +43,8 @@ public class ChonkyCatEntity extends TamableAnimal {
             SynchedEntityData.defineId(ChonkyCatEntity.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Float> SIZE_SCALE =
             SynchedEntityData.defineId(ChonkyCatEntity.class, EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<Integer> COLLAR_COLOR =
+            SynchedEntityData.defineId(ChonkyCatEntity.class, EntityDataSerializers.INT);
 
     private static final int COD_REQUIRED = 20;
     public static final int VARIANT_COUNT = 11;
@@ -71,6 +73,7 @@ public class ChonkyCatEntity extends TamableAnimal {
         builder.define(ARMOR_TYPE, 0);
         builder.define(VARIANT, 0);
         builder.define(SIZE_SCALE, 1.0f);
+        builder.define(COLLAR_COLOR, 14); // default red (DyeColor.RED.getId())
     }
 
     @Override
@@ -99,11 +102,19 @@ public class ChonkyCatEntity extends TamableAnimal {
         this.goalSelector.addGoal(5, new LookAtPlayerGoal(this, Player.class, 8.0f));
         this.goalSelector.addGoal(6, new RandomLookAroundGoal(this));
 
-        // Target hostile mobs - NEVER target players
+        // Target hostile mobs - NEVER target players or other chonky cats
         this.targetSelector.addGoal(1, new OwnerHurtByTargetGoal(this));
         this.targetSelector.addGoal(2, new OwnerHurtTargetGoal(this));
-        this.targetSelector.addGoal(3, new HurtByTargetGoal(this));
+        this.targetSelector.addGoal(3, new HurtByTargetGoal(this).setAlertOthers());
         this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, Monster.class, true));
+    }
+
+    @Override
+    public boolean canAttack(LivingEntity target) {
+        // Never attack other chonky cats or players
+        if (target instanceof ChonkyCatEntity) return false;
+        if (target instanceof Player) return false;
+        return super.canAttack(target);
     }
 
     @Override
@@ -155,6 +166,37 @@ public class ChonkyCatEntity extends TamableAnimal {
                     player.sendSystemMessage(Component.literal("\u00a76Chonky Cat equipped armor! (+" + bonus + " armor)"));
                 }
 
+                return InteractionResult.sidedSuccess(this.level().isClientSide());
+            }
+
+            // Collar dyeing: right-click with any dye
+            if (stack.getItem() instanceof net.minecraft.world.item.DyeItem dyeItem) {
+                net.minecraft.world.item.DyeColor color = dyeItem.getDyeColor();
+                if (color.getId() != this.getCollarColor()) {
+                    this.entityData.set(COLLAR_COLOR, color.getId());
+                    if (!player.getAbilities().instabuild) {
+                        stack.shrink(1);
+                    }
+                    return InteractionResult.sidedSuccess(this.level().isClientSide());
+                }
+            }
+
+            // Healing: feed raw cod, cooked cod, raw salmon, or cooked salmon to heal
+            if (this.getHealth() < this.getMaxHealth() &&
+                    (stack.is(Items.COD) || stack.is(Items.COOKED_COD) ||
+                     stack.is(Items.SALMON) || stack.is(Items.COOKED_SALMON) ||
+                     stack.is(Items.COOKED_BEEF) || stack.is(Items.COOKED_CHICKEN) ||
+                     stack.is(Items.COOKED_PORKCHOP) || stack.is(Items.COOKED_MUTTON))) {
+                this.heal(10.0f);
+                if (!player.getAbilities().instabuild) {
+                    stack.shrink(1);
+                }
+                this.playSound(SoundEvents.CAT_EAT, 1.0f, 1.0f);
+                if (this.level() instanceof ServerLevel serverLevel) {
+                    serverLevel.sendParticles(ParticleTypes.HEART,
+                            this.getX(), this.getY() + 0.5, this.getZ(),
+                            3, 0.3, 0.3, 0.3, 0);
+                }
                 return InteractionResult.sidedSuccess(this.level().isClientSide());
             }
 
@@ -232,6 +274,7 @@ public class ChonkyCatEntity extends TamableAnimal {
         tag.putInt("ArmorType", this.entityData.get(ARMOR_TYPE));
         tag.putInt("Variant", this.entityData.get(VARIANT));
         tag.putFloat("SizeScale", this.entityData.get(SIZE_SCALE));
+        tag.putInt("CollarColor", this.entityData.get(COLLAR_COLOR));
     }
 
     @Override
@@ -247,6 +290,9 @@ public class ChonkyCatEntity extends TamableAnimal {
         this.entityData.set(VARIANT, tag.getInt("Variant"));
         float scale = tag.getFloat("SizeScale");
         this.entityData.set(SIZE_SCALE, scale > 0 ? scale : 1.0f);
+        if (tag.contains("CollarColor")) {
+            this.entityData.set(COLLAR_COLOR, tag.getInt("CollarColor"));
+        }
     }
 
     public int getArmorBonus() {
@@ -255,6 +301,10 @@ public class ChonkyCatEntity extends TamableAnimal {
 
     public int getArmorType() {
         return this.entityData.get(ARMOR_TYPE);
+    }
+
+    public int getCollarColor() {
+        return this.entityData.get(COLLAR_COLOR);
     }
 
     private ItemStack getArmorItemForType(int type) {

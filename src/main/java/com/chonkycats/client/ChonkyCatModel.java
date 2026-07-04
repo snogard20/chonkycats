@@ -50,20 +50,20 @@ public class ChonkyCatModel extends HierarchicalModel<ChonkyCatEntity> {
                 CubeListBuilder.create()
                         .texOffs(0, 0)
                         .addBox(-2.5f, -2.0f, -3.0f, 5.0f, 4.0f, 5.0f),
-                PartPose.offset(0.0f, 16.5f, -7.0f));
+                PartPose.offset(0.0f, 16.5f, -6.0f));
 
         // Front legs: texOffs(8,13), 2w x 3h x 2d — stubby chonky legs
         partDefinition.addOrReplaceChild("left_front_leg",
                 CubeListBuilder.create()
                         .texOffs(8, 13)
                         .addBox(-1.0f, 0.0f, -1.0f, 2.0f, 3.0f, 2.0f),
-                PartPose.offset(-1.5f, 21.0f, -4.5f));
+                PartPose.offset(-1.5f, 21.0f, -4.0f));
 
         partDefinition.addOrReplaceChild("right_front_leg",
                 CubeListBuilder.create()
                         .texOffs(8, 13)
                         .addBox(-1.0f, 0.0f, -1.0f, 2.0f, 3.0f, 2.0f),
-                PartPose.offset(1.5f, 21.0f, -4.5f));
+                PartPose.offset(1.5f, 21.0f, -4.0f));
 
         // Back legs: texOffs(40,0), 2w x 3h x 2d
         partDefinition.addOrReplaceChild("left_back_leg",
@@ -147,7 +147,7 @@ public class ChonkyCatModel extends HierarchicalModel<ChonkyCatEntity> {
             this.body.y = 21.0f; // lower body
 
             this.head.y = 18.0f;
-            this.head.z = -5.5f;
+            this.head.z = -4.5f;
 
             // Front legs extend forward slightly
             this.leftFrontLeg.xRot = -0.4f;
@@ -165,8 +165,9 @@ public class ChonkyCatModel extends HierarchicalModel<ChonkyCatEntity> {
 
             this.tail.y = 20.0f;
             this.tail.z = 3.5f;
-            this.tail.xRot = 0.2f;
-            this.tail2.xRot = -0.1f;
+            this.tail.xRot = Mth.HALF_PI; // tail lies flat along the ground
+            this.tail.yRot = Mth.cos(ageInTicks * 0.1f) * 0.4f; // lazy side-to-side sway
+            this.tail2.xRot = 0.0f; // tip stays flat too
         }
 
         this.collar.visible = entity.isTame();

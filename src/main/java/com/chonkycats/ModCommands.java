@@ -136,6 +136,14 @@ public class ModCommands {
                 stack = new ItemStack(ChonkyCatsMod.CHONKY_WAND);
                 name = "Chonky Wand";
                 break;
+            case "all_armor":
+                player.getInventory().add(new ItemStack(ChonkyCatsMod.LEATHER_CAT_ARMOR));
+                player.getInventory().add(new ItemStack(ChonkyCatsMod.IRON_CAT_ARMOR));
+                player.getInventory().add(new ItemStack(ChonkyCatsMod.GOLD_CAT_ARMOR));
+                player.getInventory().add(new ItemStack(ChonkyCatsMod.DIAMOND_CAT_ARMOR));
+                player.getInventory().add(new ItemStack(ChonkyCatsMod.NETHERITE_CAT_ARMOR));
+                player.sendSystemMessage(Component.literal("\u00a7aReceived: \u00a7fAll Cat Armor!"));
+                return 1;
             default:
                 player.sendSystemMessage(Component.literal("\u00a7cUnknown item."));
                 return 0;

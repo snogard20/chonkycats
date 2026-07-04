@@ -63,10 +63,13 @@ public class ChonkyCatRenderer extends MobRenderer<ChonkyCatEntity, ChonkyCatMod
                            ChonkyCatEntity entity, float limbSwing, float limbSwingAmount,
                            float partialTick, float ageInTicks, float netHeadYaw, float headPitch) {
             if (entity.isTame() && !entity.isInvisible()) {
+                int colorId = entity.getCollarColor();
+                net.minecraft.world.item.DyeColor dyeColor = net.minecraft.world.item.DyeColor.byId(colorId);
+                int color = dyeColor.getTextureDiffuseColor() | 0xFF000000;
                 VertexConsumer vertexConsumer = buffer.getBuffer(
                         RenderType.entityCutoutNoCull(COLLAR_TEXTURE));
                 this.getParentModel().renderToBuffer(poseStack, vertexConsumer, packedLight,
-                        OverlayTexture.NO_OVERLAY);
+                        OverlayTexture.NO_OVERLAY, color);
             }
         }
     }
