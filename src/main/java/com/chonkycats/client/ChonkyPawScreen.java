@@ -9,7 +9,7 @@ import net.minecraft.resources.ResourceLocation;
 
 public class ChonkyPawScreen extends Screen {
     private static final int PANEL_WIDTH = 180;
-    private static final int PANEL_HEIGHT = 160;
+    private static final int PANEL_HEIGHT = 186;
 
     public ChonkyPawScreen() {
         super(Component.literal("Chonky Cats"));
@@ -46,11 +46,17 @@ public class ChonkyPawScreen extends Screen {
                     giveViaCommand("all_armor");
                 }).bounds(left + 10, btnY + 78, btnWidth, 20).build());
 
+        // Skylands Compass button
+        this.addRenderableWidget(Button.builder(
+                Component.literal("\uD83E\uDDED Skylands Compass"), btn -> {
+                    giveViaCommand("biome_compass");
+                }).bounds(left + 10, btnY + 104, btnWidth, 20).build());
+
         // Close button
         this.addRenderableWidget(Button.builder(
                 Component.literal("\u2716 Close"), btn -> {
                     this.onClose();
-                }).bounds(left + 10, btnY + 104, btnWidth, 20).build());
+                }).bounds(left + 10, btnY + 130, btnWidth, 20).build());
     }
 
     @Override

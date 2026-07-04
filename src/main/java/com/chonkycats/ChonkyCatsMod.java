@@ -1,8 +1,10 @@
 package com.chonkycats;
 
 import com.chonkycats.entity.ChonkyCatEntity;
+import com.chonkycats.item.BiomeCompassItem;
 import com.chonkycats.item.ChonkyCatArmorItem;
 import com.chonkycats.item.ChonkyWandItem;
+import com.chonkycats.network.ModNetworking;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
@@ -55,6 +57,10 @@ public class ChonkyCatsMod implements ModInitializer {
     public static final Item CHONKY_WAND = registerItem("chonky_wand",
             new ChonkyWandItem(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC)));
 
+    // Biome Compass — locates Chonky Cat Skylands biome
+    public static final Item BIOME_COMPASS = registerItem("biome_compass",
+            new BiomeCompassItem(new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON)));
+
     private static Item registerItem(String name, Item item) {
         return Registry.register(BuiltInRegistries.ITEM, ResourceLocation.fromNamespaceAndPath(MOD_ID, name), item);
     }
@@ -62,6 +68,9 @@ public class ChonkyCatsMod implements ModInitializer {
     @Override
     public void onInitialize() {
         LOGGER.info("Chonky Cats mod loading! Prepare for thicc protectors!");
+
+        // Register network payloads (must be before client init)
+        ModNetworking.registerPayloads();
 
         // Register entity attributes
         FabricDefaultAttributeRegistry.register(CHONKY_CAT, ChonkyCatEntity.createAttributes());
@@ -77,6 +86,10 @@ public class ChonkyCatsMod implements ModInitializer {
 
         ItemGroupEvents.modifyEntriesEvent(CreativeModeTabs.SPAWN_EGGS).register(entries -> {
             entries.accept(CHONKY_CAT_SPAWN_EGG);
+        });
+
+        ItemGroupEvents.modifyEntriesEvent(CreativeModeTabs.TOOLS_AND_UTILITIES).register(entries -> {
+            entries.accept(BIOME_COMPASS);
         });
 
         // Register commands

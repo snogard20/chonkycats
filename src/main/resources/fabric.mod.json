@@ -13,7 +13,7 @@
     "main": ["com.chonkycats.ChonkyCatsMod"],
     "client": ["com.chonkycats.ChonkyCatsClient"]
   },
-  "mixins": [],
+  "mixins": ["chonkycats.mixins.json"],
   "depends": {
     "fabricloader": ">=0.16.0",
     "minecraft": "~1.21.1",

@@ -3,9 +3,13 @@ package com.chonkycats;
 import com.chonkycats.client.ChonkyCatModel;
 import com.chonkycats.client.ChonkyCatRenderer;
 import com.chonkycats.client.ChonkyPawScreen;
+import com.chonkycats.client.BiomeLocatorHud;
+import com.chonkycats.network.BiomeLocationPayload;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityModelLayerRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.fabricmc.fabric.api.client.screen.v1.Screens;
 import net.minecraft.client.Minecraft;
@@ -29,6 +33,14 @@ public class ChonkyCatsClient implements ClientModInitializer {
         EntityRendererRegistry.register(ChonkyCatsMod.CHONKY_CAT, ChonkyCatRenderer::new);
         EntityModelLayerRegistry.registerModelLayer(CHONKY_CAT_LAYER, ChonkyCatModel::createBodyLayer);
         EntityModelLayerRegistry.registerModelLayer(CHONKY_CAT_ARMOR_LAYER, ChonkyCatModel::createArmorLayer);
+
+        // Register biome compass HUD
+        HudRenderCallback.EVENT.register(new BiomeLocatorHud());
+
+        // Register biome location packet handler
+        ClientPlayNetworking.registerGlobalReceiver(BiomeLocationPayload.TYPE, (payload, context) -> {
+            BiomeLocatorHud.updateTarget(payload.x(), payload.z(), payload.found());
+        });
 
         // Add paw button to inventory screen
         ScreenEvents.AFTER_INIT.register((client, screen, scaledWidth, scaledHeight) -> {

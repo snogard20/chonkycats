@@ -1,0 +1,13 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.chonkycats.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "OverworldBiomeBuilderMixin"
+  ],
+  "client": [],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

@@ -144,6 +144,10 @@ public class ModCommands {
                 player.getInventory().add(new ItemStack(ChonkyCatsMod.NETHERITE_CAT_ARMOR));
                 player.sendSystemMessage(Component.literal("\u00a7aReceived: \u00a7fAll Cat Armor!"));
                 return 1;
+            case "biome_compass":
+                stack = new ItemStack(ChonkyCatsMod.BIOME_COMPASS);
+                name = "Skylands Compass";
+                break;
             default:
                 player.sendSystemMessage(Component.literal("\u00a7cUnknown item."));
                 return 0;
