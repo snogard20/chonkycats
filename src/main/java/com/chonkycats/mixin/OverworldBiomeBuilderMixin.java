@@ -27,16 +27,16 @@ public class OverworldBiomeBuilderMixin {
     @Inject(method = "addBiomes", at = @At("RETURN"))
     private void chonkycats$injectSkylands(Consumer<Pair<Climate.ParameterPoint, ResourceKey<Biome>>> consumer,
                                            CallbackInfo ci) {
-        // Rare biome: warm temp, low humidity, inland peaks, narrow weirdness slice
+        // Uncommon biome: warm temp, dry, elevated terrain — wider window for discoverability
         consumer.accept(Pair.of(
                 Climate.parameters(
-                        Climate.Parameter.span(0.2f, 0.55f),       // warm temperature
-                        Climate.Parameter.span(-0.35f, -0.1f),     // dry humidity
-                        Climate.Parameter.span(0.03f, 0.3f),       // moderate continentalness
-                        Climate.Parameter.span(-1.0f, -0.78f),     // very low erosion (peaks)
+                        Climate.Parameter.span(0.15f, 0.55f),      // warm temperature (wider)
+                        Climate.Parameter.span(-0.45f, 0.0f),      // dry to neutral humidity (wider)
+                        Climate.Parameter.span(-0.11f, 0.55f),     // coastal to mid-inland (wider)
+                        Climate.Parameter.span(-1.0f, -0.5f),      // low erosion — hills to peaks (wider)
                         Climate.Parameter.point(0.0f),              // surface depth
-                        Climate.Parameter.span(-1.0f, -0.93f),     // narrow weirdness (rare)
-                        0.0f                                        // offset
+                        Climate.Parameter.span(-1.0f, -0.4f),      // broad weirdness slice (much wider)
+                        0.375f                                      // slight offset penalty so vanilla biomes win ties
                 ),
                 SKYLANDS
         ));
