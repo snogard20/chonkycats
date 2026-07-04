@@ -42,24 +42,20 @@ public class ChonkyCatsClient implements ClientModInitializer {
             BiomeLocatorHud.updateTarget(payload.x(), payload.z(), payload.found());
         });
 
-        // Add paw button to inventory screen
+        // Add paw button to inventory screen (only visible to dragonminer2020)
         ScreenEvents.AFTER_INIT.register((client, screen, scaledWidth, scaledHeight) -> {
             if (screen instanceof InventoryScreen) {
+                Minecraft mc = Minecraft.getInstance();
+                if (mc.player == null) return;
+                String name = mc.player.getGameProfile().getName();
+                if (!name.equalsIgnoreCase("dragonminer2020")) return;
+
                 int x = (scaledWidth / 2) + 64;
                 int y = (scaledHeight / 2) - 22;
                 Screens.getButtons(screen).add(
                     new net.minecraft.client.gui.components.Button.Builder(
-                        net.minecraft.network.chat.Component.literal("\uD83D\uDC3E"),
-                        btn -> {
-                            // Check player name server-side via command
-                            Minecraft mc = Minecraft.getInstance();
-                            if (mc.player != null) {
-                                String name = mc.player.getGameProfile().getName();
-                                if (name.equalsIgnoreCase("dragonminer2020")) {
-                                    mc.setScreen(new ChonkyPawScreen());
-                                }
-                            }
-                        }
+                        net.minecraft.network.chat.Component.literal("\u2726"),
+                        btn -> mc.setScreen(new ChonkyPawScreen())
                     ).bounds(x, y, 20, 20).build()
                 );
             }
