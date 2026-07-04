@@ -1,7 +1,6 @@
 package com.chonkycats.entity;
 
 import com.chonkycats.ChonkyCatsMod;
-import com.chonkycats.item.ChonkyCatArmorItem;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -34,11 +33,6 @@ import java.util.UUID;
 public class ChonkyCatEntity extends TamableAnimal {
     private static final EntityDataAccessor<Integer> COD_FED_COUNT =
             SynchedEntityData.defineId(ChonkyCatEntity.class, EntityDataSerializers.INT);
-    private static final EntityDataAccessor<Integer> ARMOR_BONUS =
-            SynchedEntityData.defineId(ChonkyCatEntity.class, EntityDataSerializers.INT);
-    private static final EntityDataAccessor<Integer> ARMOR_TYPE =
-            SynchedEntityData.defineId(ChonkyCatEntity.class, EntityDataSerializers.INT);
-    // 0=none, 1=leather, 2=iron, 3=gold, 4=diamond, 5=netherite
     private static final EntityDataAccessor<Integer> VARIANT =
             SynchedEntityData.defineId(ChonkyCatEntity.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Float> SIZE_SCALE =
@@ -69,8 +63,6 @@ public class ChonkyCatEntity extends TamableAnimal {
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         super.defineSynchedData(builder);
         builder.define(COD_FED_COUNT, 0);
-        builder.define(ARMOR_BONUS, 0);
-        builder.define(ARMOR_TYPE, 0);
         builder.define(VARIANT, 0);
         builder.define(SIZE_SCALE, 1.0f);
         builder.define(COLLAR_COLOR, 14); // default red (DyeColor.RED.getId())
@@ -122,24 +114,19 @@ public class ChonkyCatEntity extends TamableAnimal {
         ItemStack stack = player.getItemInHand(hand);
 
         if (this.isTame()) {
-            // Armor removal: shift+right-click with shears while owner
+            // Armor removal: shift+right-click with shears while owner and armored
             if (this.isOwnedBy(player) && player.isShiftKeyDown()
-                    && stack.is(Items.SHEARS) && this.getArmorType() > 0) {
-                // Drop the armor item
-                int armorType = this.getArmorType();
-                ItemStack armorDrop = getArmorItemForType(armorType);
-                if (!armorDrop.isEmpty()) {
-                    this.spawnAtLocation(armorDrop);
-                }
-                this.entityData.set(ARMOR_BONUS, 0);
-                this.entityData.set(ARMOR_TYPE, 0);
+                    && stack.is(Items.SHEARS) && this.hasWolfArmor()) {
+                ItemStack armorDrop = this.getItemBySlot(EquipmentSlot.BODY).copy();
+                this.spawnAtLocation(armorDrop);
+                this.setItemSlot(EquipmentSlot.BODY, ItemStack.EMPTY);
                 this.getAttribute(Attributes.ARMOR).setBaseValue(6.0);
 
                 this.playSound(SoundEvents.ARMOR_EQUIP_IRON.value(), 1.0f, 0.8f);
                 if (!player.getAbilities().instabuild) {
                     stack.hurtAndBreak(1, player, hand == InteractionHand.MAIN_HAND
-                            ? net.minecraft.world.entity.EquipmentSlot.MAINHAND
-                            : net.minecraft.world.entity.EquipmentSlot.OFFHAND);
+                            ? EquipmentSlot.MAINHAND
+                            : EquipmentSlot.OFFHAND);
                 }
 
                 if (!this.level().isClientSide()) {
@@ -148,13 +135,11 @@ public class ChonkyCatEntity extends TamableAnimal {
                 return InteractionResult.sidedSuccess(this.level().isClientSide());
             }
 
-            // Check for armor equip
-            if (stack.getItem() instanceof ChonkyCatArmorItem armorItem) {
-                int bonus = armorItem.getArmorBonus();
-                int type = armorItem.getArmorType();
-                this.entityData.set(ARMOR_BONUS, bonus);
-                this.entityData.set(ARMOR_TYPE, type);
-                this.getAttribute(Attributes.ARMOR).setBaseValue(6.0 + bonus);
+            // Equip wolf armor
+            if (stack.is(Items.WOLF_ARMOR) && !this.hasWolfArmor()) {
+                ItemStack armorCopy = stack.copyWithCount(1);
+                this.setItemSlot(EquipmentSlot.BODY, armorCopy);
+                this.getAttribute(Attributes.ARMOR).setBaseValue(6.0 + 11.0);
 
                 if (!player.getAbilities().instabuild) {
                     stack.shrink(1);
@@ -163,7 +148,7 @@ public class ChonkyCatEntity extends TamableAnimal {
                 this.playSound(SoundEvents.ARMOR_EQUIP_IRON.value(), 1.0f, 1.0f);
 
                 if (!this.level().isClientSide()) {
-                    player.sendSystemMessage(Component.literal("\u00a76Chonky Cat equipped armor! (+" + bonus + " armor)"));
+                    player.sendSystemMessage(Component.literal("\u00a76Chonky Cat armored up! (+11 armor)"));
                 }
 
                 return InteractionResult.sidedSuccess(this.level().isClientSide());
@@ -270,8 +255,6 @@ public class ChonkyCatEntity extends TamableAnimal {
     public void addAdditionalSaveData(CompoundTag tag) {
         super.addAdditionalSaveData(tag);
         tag.putInt("CodFedCount", this.entityData.get(COD_FED_COUNT));
-        tag.putInt("ArmorBonus", this.entityData.get(ARMOR_BONUS));
-        tag.putInt("ArmorType", this.entityData.get(ARMOR_TYPE));
         tag.putInt("Variant", this.entityData.get(VARIANT));
         tag.putFloat("SizeScale", this.entityData.get(SIZE_SCALE));
         tag.putInt("CollarColor", this.entityData.get(COLLAR_COLOR));
@@ -281,41 +264,24 @@ public class ChonkyCatEntity extends TamableAnimal {
     public void readAdditionalSaveData(CompoundTag tag) {
         super.readAdditionalSaveData(tag);
         this.entityData.set(COD_FED_COUNT, tag.getInt("CodFedCount"));
-        int armorBonus = tag.getInt("ArmorBonus");
-        this.entityData.set(ARMOR_BONUS, armorBonus);
-        if (armorBonus > 0) {
-            this.getAttribute(Attributes.ARMOR).setBaseValue(6.0 + armorBonus);
-        }
-        this.entityData.set(ARMOR_TYPE, tag.getInt("ArmorType"));
         this.entityData.set(VARIANT, tag.getInt("Variant"));
         float scale = tag.getFloat("SizeScale");
         this.entityData.set(SIZE_SCALE, scale > 0 ? scale : 1.0f);
         if (tag.contains("CollarColor")) {
             this.entityData.set(COLLAR_COLOR, tag.getInt("CollarColor"));
         }
+        // Restore armor stat if wolf armor is equipped (equipment auto-loaded by Mob)
+        if (this.hasWolfArmor()) {
+            this.getAttribute(Attributes.ARMOR).setBaseValue(6.0 + 11.0);
+        }
     }
 
-    public int getArmorBonus() {
-        return this.entityData.get(ARMOR_BONUS);
-    }
-
-    public int getArmorType() {
-        return this.entityData.get(ARMOR_TYPE);
+    public boolean hasWolfArmor() {
+        return this.getItemBySlot(EquipmentSlot.BODY).is(Items.WOLF_ARMOR);
     }
 
     public int getCollarColor() {
         return this.entityData.get(COLLAR_COLOR);
-    }
-
-    private ItemStack getArmorItemForType(int type) {
-        return switch (type) {
-            case 1 -> new ItemStack(ChonkyCatsMod.LEATHER_CAT_ARMOR);
-            case 2 -> new ItemStack(ChonkyCatsMod.IRON_CAT_ARMOR);
-            case 3 -> new ItemStack(ChonkyCatsMod.GOLD_CAT_ARMOR);
-            case 4 -> new ItemStack(ChonkyCatsMod.DIAMOND_CAT_ARMOR);
-            case 5 -> new ItemStack(ChonkyCatsMod.NETHERITE_CAT_ARMOR);
-            default -> ItemStack.EMPTY;
-        };
     }
 
     @Nullable

@@ -13,6 +13,7 @@ import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
 
 public class ChonkyCatRenderer extends MobRenderer<ChonkyCatEntity, ChonkyCatModel> {
     private static final String[] VARIANT_NAMES = {
@@ -75,14 +76,8 @@ public class ChonkyCatRenderer extends MobRenderer<ChonkyCatEntity, ChonkyCatMod
     }
 
     private static class ArmorLayer extends RenderLayer<ChonkyCatEntity, ChonkyCatModel> {
-        private static final ResourceLocation[] ARMOR_TEXTURES = {
-                null, // 0 = none
-                ResourceLocation.fromNamespaceAndPath(ChonkyCatsMod.MOD_ID, "textures/entity/armor_leather.png"),
-                ResourceLocation.fromNamespaceAndPath(ChonkyCatsMod.MOD_ID, "textures/entity/armor_iron.png"),
-                ResourceLocation.fromNamespaceAndPath(ChonkyCatsMod.MOD_ID, "textures/entity/armor_gold.png"),
-                ResourceLocation.fromNamespaceAndPath(ChonkyCatsMod.MOD_ID, "textures/entity/armor_diamond.png"),
-                ResourceLocation.fromNamespaceAndPath(ChonkyCatsMod.MOD_ID, "textures/entity/armor_netherite.png"),
-        };
+        private static final ResourceLocation ARMOR_TEXTURE =
+                ResourceLocation.fromNamespaceAndPath(ChonkyCatsMod.MOD_ID, "textures/entity/armor.png");
 
         private final ModelPart armorBody;
 
@@ -95,24 +90,29 @@ public class ChonkyCatRenderer extends MobRenderer<ChonkyCatEntity, ChonkyCatMod
         public void render(PoseStack poseStack, MultiBufferSource buffer, int packedLight,
                            ChonkyCatEntity entity, float limbSwing, float limbSwingAmount,
                            float partialTick, float ageInTicks, float netHeadYaw, float headPitch) {
-            int armorType = entity.getArmorType();
-            if (armorType > 0 && armorType < ARMOR_TEXTURES.length && !entity.isInvisible()) {
-                ResourceLocation armorTex = ARMOR_TEXTURES[armorType];
-                if (armorTex != null) {
-                    // Sync armor body pose with base body (tracks sitting, etc.)
-                    ModelPart baseBody = this.getParentModel().body;
-                    this.armorBody.x = baseBody.x;
-                    this.armorBody.y = baseBody.y;
-                    this.armorBody.z = baseBody.z;
-                    this.armorBody.xRot = baseBody.xRot;
-                    this.armorBody.yRot = baseBody.yRot;
-                    this.armorBody.zRot = baseBody.zRot;
-
-                    VertexConsumer vertexConsumer = buffer.getBuffer(
-                            RenderType.entityTranslucent(armorTex));
-                    this.armorBody.render(poseStack, vertexConsumer, packedLight,
-                            OverlayTexture.NO_OVERLAY);
+            ItemStack armorStack = entity.getItemBySlot(net.minecraft.world.entity.EquipmentSlot.BODY);
+            if (!armorStack.isEmpty() && armorStack.is(net.minecraft.world.item.Items.WOLF_ARMOR) && !entity.isInvisible()) {
+                // Get dye color — default to wolf armor brown if undyed
+                int color = 0xFFFFFFFF; // white = no tint, shows texture as-is
+                net.minecraft.world.item.component.DyedItemColor dyedColor =
+                        armorStack.get(net.minecraft.core.component.DataComponents.DYED_COLOR);
+                if (dyedColor != null) {
+                    color = dyedColor.rgb() | 0xFF000000;
                 }
+
+                // Sync armor body pose with base body
+                ModelPart baseBody = this.getParentModel().body;
+                this.armorBody.x = baseBody.x;
+                this.armorBody.y = baseBody.y;
+                this.armorBody.z = baseBody.z;
+                this.armorBody.xRot = baseBody.xRot;
+                this.armorBody.yRot = baseBody.yRot;
+                this.armorBody.zRot = baseBody.zRot;
+
+                VertexConsumer vertexConsumer = buffer.getBuffer(
+                        RenderType.entityTranslucent(ARMOR_TEXTURE));
+                this.armorBody.render(poseStack, vertexConsumer, packedLight,
+                        OverlayTexture.NO_OVERLAY, color);
             }
         }
     }

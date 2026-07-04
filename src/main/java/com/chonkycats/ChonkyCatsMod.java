@@ -2,7 +2,6 @@ package com.chonkycats;
 
 import com.chonkycats.entity.ChonkyCatEntity;
 import com.chonkycats.item.BiomeCompassItem;
-import com.chonkycats.item.ChonkyCatArmorItem;
 import com.chonkycats.item.ChonkyWandItem;
 import com.chonkycats.network.ModNetworking;
 import net.fabricmc.api.ModInitializer;
@@ -37,18 +36,6 @@ public class ChonkyCatsMod implements ModInitializer {
                     .build("chonky_cat")
     );
 
-    // Armor items
-    public static final Item LEATHER_CAT_ARMOR = registerItem("chonky_cat_leather_armor",
-            new ChonkyCatArmorItem(3, 1, new Item.Properties().stacksTo(1)));
-    public static final Item IRON_CAT_ARMOR = registerItem("chonky_cat_iron_armor",
-            new ChonkyCatArmorItem(6, 2, new Item.Properties().stacksTo(1)));
-    public static final Item GOLD_CAT_ARMOR = registerItem("chonky_cat_gold_armor",
-            new ChonkyCatArmorItem(5, 3, new Item.Properties().stacksTo(1)));
-    public static final Item DIAMOND_CAT_ARMOR = registerItem("chonky_cat_diamond_armor",
-            new ChonkyCatArmorItem(8, 4, new Item.Properties().stacksTo(1)));
-    public static final Item NETHERITE_CAT_ARMOR = registerItem("chonky_cat_netherite_armor",
-            new ChonkyCatArmorItem(10, 5, new Item.Properties().stacksTo(1)));
-
     // Spawn egg
     public static final Item CHONKY_CAT_SPAWN_EGG = registerItem("chonky_cat_spawn_egg",
             new SpawnEggItem(CHONKY_CAT, 0xE88A36, 0x3D2B1F, new Item.Properties()));
@@ -76,14 +63,6 @@ public class ChonkyCatsMod implements ModInitializer {
         FabricDefaultAttributeRegistry.register(CHONKY_CAT, ChonkyCatEntity.createAttributes());
 
         // Add items to creative tabs
-        ItemGroupEvents.modifyEntriesEvent(CreativeModeTabs.COMBAT).register(entries -> {
-            entries.accept(LEATHER_CAT_ARMOR);
-            entries.accept(IRON_CAT_ARMOR);
-            entries.accept(GOLD_CAT_ARMOR);
-            entries.accept(DIAMOND_CAT_ARMOR);
-            entries.accept(NETHERITE_CAT_ARMOR);
-        });
-
         ItemGroupEvents.modifyEntriesEvent(CreativeModeTabs.SPAWN_EGGS).register(entries -> {
             entries.accept(CHONKY_CAT_SPAWN_EGG);
         });

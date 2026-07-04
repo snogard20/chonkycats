@@ -30,7 +30,7 @@ public class ChonkyPawScreen extends Screen {
 
         // Chonky Cat Egg button
         this.addRenderableWidget(Button.builder(
-                Component.literal("\uD83D\uDC31 Chonky Cat Egg"), btn -> {
+                Component.literal("\u2606 Chonky Cat Egg"), btn -> {
                     giveViaCommand("spawn_egg");
                 }).bounds(left + 10, btnY + 26, btnWidth, 20).build());
 
@@ -40,15 +40,15 @@ public class ChonkyPawScreen extends Screen {
                     giveViaCommand("chonky_wand");
                 }).bounds(left + 10, btnY + 52, btnWidth, 20).build());
 
-        // All armor buttons
+        // Wolf Armor button
         this.addRenderableWidget(Button.builder(
-                Component.literal("\uD83D\uDEE1 Cat Armor (All)"), btn -> {
+                Component.literal("\u2666 Wolf Armor"), btn -> {
                     giveViaCommand("all_armor");
                 }).bounds(left + 10, btnY + 78, btnWidth, 20).build());
 
         // Skylands Compass button
         this.addRenderableWidget(Button.builder(
-                Component.literal("\uD83E\uDDED Skylands Compass"), btn -> {
+                Component.literal("\u2726 Skylands Compass"), btn -> {
                     giveViaCommand("biome_compass");
                 }).bounds(left + 10, btnY + 104, btnWidth, 20).build());
 
@@ -70,7 +70,7 @@ public class ChonkyPawScreen extends Screen {
 
         // Title
         graphics.drawCenteredString(this.font,
-                Component.literal("\u00a76\u00a7lChonky Cats \uD83D\uDC3E"),
+                Component.literal("\u00a76\u00a7lChonky Cats \u2726"),
                 this.width / 2, top + 10, 0xFFFFFF);
 
         super.render(graphics, mouseX, mouseY, partialTick);
