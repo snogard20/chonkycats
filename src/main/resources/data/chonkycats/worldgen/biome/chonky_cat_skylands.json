@@ -1,0 +1,57 @@
+{
+  "temperature": 0.7,
+  "downfall": 0.3,
+  "has_precipitation": true,
+  "effects": {
+    "sky_color": 8900331,
+    "fog_color": 13230060,
+    "water_color": 4159204,
+    "water_fog_color": 329011,
+    "grass_color": 8191744,
+    "mood_sound": {
+      "sound": "minecraft:ambient.cave",
+      "tick_delay": 6000,
+      "block_search_extent": 8,
+      "offset": 2.0
+    }
+  },
+  "spawners": {
+    "monster": [],
+    "creature": [
+      {
+        "type": "chonkycats:chonky_cat",
+        "weight": 12,
+        "minCount": 2,
+        "maxCount": 5
+      }
+    ],
+    "ambient": [],
+    "axolotls": [],
+    "underground_water_creature": [],
+    "water_creature": [],
+    "water_ambient": [],
+    "misc": []
+  },
+  "spawn_costs": {},
+  "carvers": {
+    "air": []
+  },
+  "features": [
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [
+      "minecraft:trees_plains"
+    ],
+    [],
+    [
+      "minecraft:patch_grass_plain",
+      "minecraft:flower_default"
+    ],
+    [],
+    []
+  ]
+}

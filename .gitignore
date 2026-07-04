@@ -1,0 +1,23 @@
+﻿# Build output
+build/
+.gradle/
+out/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.settings/
+.classpath
+.project
+
+# Gradle wrapper jar (downloaded on build)
+gradle/wrapper/gradle-wrapper.jar
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Fabric
+run/
+logs/

@@ -1,0 +1,16 @@
+﻿{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "DDD",
+    "DCD",
+    "DDD"
+  ],
+  "key": {
+    "D": { "item": "minecraft:diamond" },
+    "C": { "item": "minecraft:cod" }
+  },
+  "result": {
+    "id": "chonkycats:chonky_cat_diamond_armor",
+    "count": 1
+  }
+}

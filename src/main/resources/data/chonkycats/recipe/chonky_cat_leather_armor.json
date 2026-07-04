@@ -1,0 +1,16 @@
+﻿{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "LLL",
+    "LCL",
+    "LLL"
+  ],
+  "key": {
+    "L": { "item": "minecraft:leather" },
+    "C": { "item": "minecraft:cod" }
+  },
+  "result": {
+    "id": "chonkycats:chonky_cat_leather_armor",
+    "count": 1
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "id": "chonkycats",
+  "version": "${version}",
+  "name": "Chonky Cats",
+  "description": "Adds tameable chonky cats that protect you from hostile mobs! Feed them 20 raw cod to tame, equip armor, and find them in the Sky Islands biome.",
+  "authors": ["JamCat"],
+  "contact": {},
+  "license": "All-Rights-Reserved",
+  "icon": "assets/chonkycats/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": ["com.chonkycats.ChonkyCatsMod"],
+    "client": ["com.chonkycats.ChonkyCatsClient"]
+  },
+  "mixins": [],
+  "depends": {
+    "fabricloader": ">=0.16.0",
+    "minecraft": "~1.21.1",
+    "java": ">=21",
+    "fabric-api": "*"
+  }
+}

@@ -1,0 +1,16 @@
+﻿{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "NNN",
+    "NCN",
+    "NNN"
+  ],
+  "key": {
+    "N": { "item": "minecraft:netherite_ingot" },
+    "C": { "item": "minecraft:cod" }
+  },
+  "result": {
+    "id": "chonkycats:chonky_cat_netherite_armor",
+    "count": 1
+  }
+}

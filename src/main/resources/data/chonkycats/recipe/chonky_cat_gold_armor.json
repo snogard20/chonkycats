@@ -1,0 +1,16 @@
+﻿{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "GGG",
+    "GCG",
+    "GGG"
+  ],
+  "key": {
+    "G": { "item": "minecraft:gold_ingot" },
+    "C": { "item": "minecraft:cod" }
+  },
+  "result": {
+    "id": "chonkycats:chonky_cat_gold_armor",
+    "count": 1
+  }
+}
